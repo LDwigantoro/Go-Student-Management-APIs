@@ -21,20 +21,38 @@ In this repository, we have four layers:
 Each of these layers is isolated from the others and only depends on the layers below it in the architecture. For example, the Mahasiswa Handler depends on the Mahasiswa Usecases but not directly on the Mahasiswa Repository. This makes it easy to test the different components of the application in isolation and also allows for flexibility in how the application is implemented.
 
 ## Running the Application
+```bash
+# Clone Repository
+$ git clone https://github.com/LDwigantoro/Go-Student-Management-APIs.git
+
+# go to directory
+$ cd Go-Student-Management-APIs
+
+# Create database with name "postgres" in postresql
+# Make .env file and fill DB_URL with your database url
+
+# Install dependencies
+$ go mod download
+
+# Run the application
+$ go run main.go
+
+```
+<!-- ## Running With Docker Compose
 
 ```docker
-# Build docker image and run
-make run
+# Build docker image
+$ docker build --tag go-student-apis .
 
 # Check if the containers are running
-$ docker ps
+$ docker image ls
 
 # Stop
 make stop
 
 # Clean
 make clean
-```
+``` -->
 
 ## APIs Request
 
