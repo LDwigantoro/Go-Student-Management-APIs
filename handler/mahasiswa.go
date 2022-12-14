@@ -17,6 +17,7 @@ func CreateMahasiswaHandler(r *gin.Engine, mahasiswaUsecase usecases.IMahasiswaU
 	mahasiswaHandler := MahasiswaHandler{mahasiswaUsecase}
 
 	r.POST("/mahasiswa", mahasiswaHandler.AddMahasiswa)
+	r.GET("mahasiswa", mahasiswaHandler.GetAllMahasiswa)
 }
 
 func (h *MahasiswaHandler) AddMahasiswa(c *gin.Context) {
@@ -42,4 +43,20 @@ func (h *MahasiswaHandler) AddMahasiswa(c *gin.Context) {
 	}
 
 	utils.HandleSuccess(c, newMahasiswa)
+}
+
+func (h *MahasiswaHandler) GetAllMahasiswa(c *gin.Context) {
+	mahasiswa, err := h.mahasiswaUsecase.ReadAll()
+
+	if err != nil {
+		utils.HandleError(c, http.StatusInternalServerError, "Server Error")
+		return
+	}
+
+	// jika tidak ada data mahasiwa di database
+	if len(*mahasiswa) == 0 {
+		utils.HandleError(c, http.StatusBadGateway, "Tidak ada data mahasiswa di database")
+	}
+
+	utils.HandleSuccess(c, mahasiswa)
 }
