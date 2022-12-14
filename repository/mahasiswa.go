@@ -12,6 +12,7 @@ type IMahasiswaRepository interface {
 	ReadAll() (*[]entities.Mahasiswa, error)
 	Read(id int) (*entities.Mahasiswa, error)
 	Update(id int, mahasiswa *entities.Mahasiswa) (*entities.Mahasiswa, error)
+	Delete(id int) error
 }
 
 type MahasiswaRepository struct {
@@ -67,4 +68,16 @@ func (m *MahasiswaRepository) Update(id int, mahasiswa *entities.Mahasiswa) (*en
 	}
 
 	return &updateMahasiswa, nil
+}
+
+func (m *MahasiswaRepository) Delete(id int) error {
+	var deleteMahasiswa = entities.Mahasiswa{}
+
+	err := m.DB.Table("mahasiswa").Where("id = ?", id).First(&deleteMahasiswa).Delete(&deleteMahasiswa).Error
+
+	if err != nil {
+		fmt.Printf("[MahasiswaRespository.Delete] gagal melakukan eksekusi query %v \n", err)
+		return fmt.Errorf("data mahasiswa tidak bisa ditemukan")
+	}
+	return nil
 }

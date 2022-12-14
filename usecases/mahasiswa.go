@@ -10,6 +10,7 @@ type IMahasiswaUsecase interface {
 	ReadAll() (*[]entities.Mahasiswa, error)
 	Read(id int) (*entities.Mahasiswa, error)
 	Update(id int, mahasiswa *entities.Mahasiswa) (*entities.Mahasiswa, error)
+	Delete(id int) error
 }
 
 type MahasiswaUsecase struct {
@@ -34,4 +35,8 @@ func (u *MahasiswaUsecase) Read(id int) (*entities.Mahasiswa, error) {
 
 func (u *MahasiswaUsecase) Update(id int, mahasiswa *entities.Mahasiswa) (*entities.Mahasiswa, error) {
 	return u.mahasiswaRepo.Update(id, mahasiswa)
+}
+
+func (u *MahasiswaUsecase) Delete(id int) error {
+	return u.mahasiswaRepo.Delete(id)
 }

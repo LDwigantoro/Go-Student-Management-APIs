@@ -21,6 +21,7 @@ func CreateMahasiswaHandler(r *gin.Engine, mahasiswaUsecase usecases.IMahasiswaU
 	r.GET("/mahasiswa", mahasiswaHandler.GetAllMahasiswa)
 	r.GET("/mahasiswa/:id", mahasiswaHandler.GetMahasiswa)
 	r.PUT("/mahasiswa/:id", mahasiswaHandler.UpdateMahasiswa)
+	r.DELETE("/mahasiswa/:id", mahasiswaHandler.HapusMahasiswa)
 }
 
 func (h *MahasiswaHandler) AddMahasiswa(c *gin.Context) {
@@ -127,5 +128,26 @@ func (h *MahasiswaHandler) UpdateMahasiswa(c *gin.Context) {
 	}
 
 	utils.HandleSuccess(c, mahasiswa)
+
+}
+
+func (h *MahasiswaHandler) HapusMahasiswa(c *gin.Context) {
+	idMahasiswa := c.Param("id")
+
+	id, err := strconv.Atoi(idMahasiswa)
+
+	if err != nil {
+		utils.HandleError(c, http.StatusBadRequest, "ID salah")
+		return
+	}
+
+	err = h.mahasiswaUsecase.Delete(id)
+
+	if err != nil {
+		utils.HandleError(c, http.StatusNotFound, err.Error())
+		return
+	}
+
+	utils.HandleSuccess(c, "Berhasil menghapus data mahasiswa")
 
 }
