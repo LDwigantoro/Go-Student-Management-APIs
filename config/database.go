@@ -5,17 +5,15 @@ import (
 	"os"
 
 	"github.com/LDwigantoro/go-clean-arch/entities"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/joho/godotenv/autoload"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func DBConnect() *gorm.DB {
-	var db *gorm.DB
-	var err error
 
 	dsn := os.Getenv("DB_URL")
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open("postgres", dsn)
 	if err != nil {
 		log.Fatal("Gagal melakukan koneksi ke database" + dsn + " : " + err.Error())
 		return nil

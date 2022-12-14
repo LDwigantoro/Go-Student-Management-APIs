@@ -8,6 +8,8 @@ import (
 type IMahasiswaUsecase interface {
 	Create(mahasiwa *entities.Mahasiswa) (*entities.Mahasiswa, error)
 	ReadAll() (*[]entities.Mahasiswa, error)
+	Read(id int) (*entities.Mahasiswa, error)
+	Update(id int, mahasiswa *entities.Mahasiswa) (*entities.Mahasiswa, error)
 }
 
 type MahasiswaUsecase struct {
@@ -24,4 +26,12 @@ func (u *MahasiswaUsecase) Create(mahasiswa *entities.Mahasiswa) (*entities.Maha
 
 func (u *MahasiswaUsecase) ReadAll() (*[]entities.Mahasiswa, error) {
 	return u.mahasiswaRepo.ReadAll()
+}
+
+func (u *MahasiswaUsecase) Read(id int) (*entities.Mahasiswa, error) {
+	return u.mahasiswaRepo.Read(id)
+}
+
+func (u *MahasiswaUsecase) Update(id int, mahasiswa *entities.Mahasiswa) (*entities.Mahasiswa, error) {
+	return u.mahasiswaRepo.Update(id, mahasiswa)
 }

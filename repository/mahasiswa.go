@@ -4,12 +4,14 @@ import (
 	"fmt"
 
 	"github.com/LDwigantoro/go-clean-arch/entities"
-	"gorm.io/gorm"
+	"github.com/jinzhu/gorm"
 )
 
 type IMahasiswaRepository interface {
 	Create(mahasiwa *entities.Mahasiswa) (*entities.Mahasiswa, error)
 	ReadAll() (*[]entities.Mahasiswa, error)
+	Read(id int) (*entities.Mahasiswa, error)
+	Update(id int, mahasiswa *entities.Mahasiswa) (*entities.Mahasiswa, error)
 }
 
 type MahasiswaRepository struct {
@@ -40,4 +42,29 @@ func (m *MahasiswaRepository) ReadAll() (*[]entities.Mahasiswa, error) {
 	}
 
 	return &mahasiswa, nil
+}
+
+func (m *MahasiswaRepository) Read(id int) (*entities.Mahasiswa, error) {
+	var mahasiswa = entities.Mahasiswa{}
+
+	err := m.DB.Table("mahasiswa").Where("id = ?", id).First(&mahasiswa).Error
+
+	if err != nil {
+		fmt.Printf("[MahasiswaRepository.Read] gagal melakukan eksekusi query %v \n", err)
+		return nil, fmt.Errorf("data mahasiswa tidak ada")
+	}
+	return &mahasiswa, nil
+}
+
+func (m *MahasiswaRepository) Update(id int, mahasiswa *entities.Mahasiswa) (*entities.Mahasiswa, error) {
+	var updateMahasiswa = entities.Mahasiswa{}
+
+	err := m.DB.Table("mahasiswa").Where("id = ?", id).First(&updateMahasiswa).Update(&mahasiswa).Error
+
+	if err != nil {
+		fmt.Printf("[MahasiswaRepository.Update] gagal melakukan eksekusi query %v \n", err)
+		return nil, fmt.Errorf("data mahasiswa tidak bisa diupdate")
+	}
+
+	return &updateMahasiswa, nil
 }

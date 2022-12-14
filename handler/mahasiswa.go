@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/LDwigantoro/go-clean-arch/entities"
 	"github.com/LDwigantoro/go-clean-arch/usecases"
@@ -17,7 +18,9 @@ func CreateMahasiswaHandler(r *gin.Engine, mahasiswaUsecase usecases.IMahasiswaU
 	mahasiswaHandler := MahasiswaHandler{mahasiswaUsecase}
 
 	r.POST("/mahasiswa", mahasiswaHandler.AddMahasiswa)
-	r.GET("mahasiswa", mahasiswaHandler.GetAllMahasiswa)
+	r.GET("/mahasiswa", mahasiswaHandler.GetAllMahasiswa)
+	r.GET("/mahasiswa/:id", mahasiswaHandler.GetMahasiswa)
+	r.PUT("/mahasiswa/:id", mahasiswaHandler.UpdateMahasiswa)
 }
 
 func (h *MahasiswaHandler) AddMahasiswa(c *gin.Context) {
@@ -59,4 +62,70 @@ func (h *MahasiswaHandler) GetAllMahasiswa(c *gin.Context) {
 	}
 
 	utils.HandleSuccess(c, mahasiswa)
+}
+
+func (h *MahasiswaHandler) GetMahasiswa(c *gin.Context) {
+
+	idMahasiswa := c.Param("id")
+	id, err := strconv.Atoi(idMahasiswa)
+
+	if err != nil {
+
+		utils.HandleError(c, http.StatusBadGateway, "ID Tidak ditemukan")
+		return
+	}
+
+	mahasiswa, err := h.mahasiswaUsecase.Read(id)
+
+	if err != nil {
+		utils.HandleError(c, http.StatusNotFound, err.Error())
+	}
+
+	utils.HandleSuccess(c, mahasiswa)
+}
+
+func (h *MahasiswaHandler) UpdateMahasiswa(c *gin.Context) {
+	idMahasiswa := c.Param("id")
+
+	id, err := strconv.Atoi(idMahasiswa)
+
+	if err != nil {
+		utils.HandleError(c, http.StatusBadGateway, "ID Tidak ditemukan")
+		return
+	}
+
+	_, err = h.mahasiswaUsecase.Read(id)
+
+	if err != nil {
+		utils.HandleError(c, http.StatusNotFound, err.Error())
+		return
+	}
+
+	var tempMahasiswa = entities.Mahasiswa{}
+	err = c.Bind(&tempMahasiswa)
+
+	if err != nil {
+		utils.HandleError(c, http.StatusInternalServerError, "Server Error")
+		return
+	}
+
+	if tempMahasiswa.ID != 0 {
+		utils.HandleError(c, http.StatusBadRequest, "ID Salah")
+		return
+	}
+
+	if tempMahasiswa.FirstName == "" || tempMahasiswa.LastName == "" {
+		utils.HandleError(c, http.StatusBadRequest, "Nama tidak boleh kosong")
+		return
+	}
+
+	mahasiswa, err := h.mahasiswaUsecase.Update(id, &tempMahasiswa)
+
+	if err != nil {
+		utils.HandleError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.HandleSuccess(c, mahasiswa)
+
 }
